@@ -8,6 +8,9 @@ import {
   DialogTitle,
   DialogActions,
   Button,
+  TextField,
+  Box,
+  Stack
 } from '@mui/material';
 import RecipeCard from '../components/RecipeCard';
 import EditRecipeModal from '../components/EditRecipeModal';
@@ -20,8 +23,8 @@ function Home() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [recipeToDelete, setRecipeToDelete] = useState(null);
   const [snackMessage, setSnackMessage] = useState('');
-  const [snackSeverity, setSnackSeverity] = useState('success'); // 'success' | 'error' | 'info' | 'warning'
-
+  const [snackSeverity, setSnackSeverity] = useState('success');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     axios.get('http://localhost:3001/recipes')
@@ -34,28 +37,52 @@ function Home() {
     setModalOpen(true);
   };
 
+  const handleAddClick = () => {
+    setSelectedRecipe(null); // Clear form for new recipe
+    setModalOpen(true);
+  };
+
   const handleDeleteClick = (recipe) => {
     setRecipeToDelete(recipe);
     setDeleteConfirmOpen(true);
   };
 
-  const handleSave = (updatedRecipe) => {
-    axios.put(`http://localhost:3001/recipes/${updatedRecipe.id}`, updatedRecipe)
-      .then(() => {
-        setRecipes(prev => prev.map(r => r.id === updatedRecipe.id ? updatedRecipe : r));
-        setSnackMessage('Recipe updated successfully!');
-        setSnackSeverity('success');
-        setSnackOpen(true);
-        setModalOpen(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setSnackMessage('Failed to update recipe.');
-        setSnackSeverity('error');
-        setSnackOpen(true);
-      });
+  const handleSave = (recipeData) => {
+    if (recipeData.id) {
+      // Existing recipe → PUT
+      axios.put(`http://localhost:3001/recipes/${recipeData.id}`, recipeData)
+        .then(() => {
+          setRecipes(prev => prev.map(r => r.id === recipeData.id ? recipeData : r));
+          setSnackMessage('Recipe updated successfully!');
+          setSnackSeverity('success');
+          setSnackOpen(true);
+          setModalOpen(false);
+        })
+        .catch(err => {
+          console.error(err);
+          setSnackMessage('Failed to update recipe.');
+          setSnackSeverity('error');
+          setSnackOpen(true);
+        });
+    } else {
+      // New recipe → POST
+      axios.post(`http://localhost:3001/recipes`, recipeData)
+        .then(res => {
+          setRecipes(prev => [...prev, res.data]);
+          setSnackMessage('Recipe added successfully!');
+          setSnackSeverity('success');
+          setSnackOpen(true);
+          setModalOpen(false);
+        })
+        .catch(err => {
+          console.error(err);
+          setSnackMessage('Failed to add recipe.');
+          setSnackSeverity('error');
+          setSnackOpen(true);
+        });
+    }
   };
-  
+
   const confirmDelete = () => {
     if (!recipeToDelete) return;
     axios.delete(`http://localhost:3001/recipes/${recipeToDelete.id}`)
@@ -74,11 +101,28 @@ function Home() {
         setSnackOpen(true);
       });
   };
-  
+
+  const filteredRecipes = recipes.filter(recipe =>
+    recipe.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+        <TextField
+          label="Search Recipes"
+          variant="outlined"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          fullWidth
+        />
+        <Button variant="contained" sx={{ ml: 2, whiteSpace: 'nowrap' }} onClick={handleAddClick}>
+          Add Recipe
+        </Button>
+      </Stack>
+
       <Grid container spacing={3}>
-        {recipes.map(recipe => (
+        {filteredRecipes.map(recipe => (
           <Grid item xs={12} sm={6} md={4} key={recipe.id}>
             <RecipeCard
               recipe={recipe}
@@ -96,7 +140,6 @@ function Home() {
         recipe={selectedRecipe}
       />
 
-      {/* Delete confirmation dialog */}
       <Dialog
         open={deleteConfirmOpen}
         onClose={() => setDeleteConfirmOpen(false)}
@@ -124,7 +167,6 @@ function Home() {
           {snackMessage}
         </Alert>
       </Snackbar>
-
     </>
   );
 }

@@ -18,11 +18,23 @@ function EditRecipeModal({ open, onClose, onSave, recipe }) {
     prepTime: '',
     method: '',
     imageUrl: '',
+    ingredients: '',
   });
 
   useEffect(() => {
     if (recipe) {
-      setForm({ ...recipe });
+      setForm({
+        ...recipe,
+        ingredients: recipe.ingredients?.join('\n') || '', // convert array to multiline string
+      });
+    } else {
+      setForm({
+        title: '',
+        prepTime: '',
+        method: '',
+        imageUrl: '',
+        ingredients: '',
+      });
     }
   }, [recipe]);
 
@@ -32,14 +44,21 @@ function EditRecipeModal({ open, onClose, onSave, recipe }) {
   };
 
   const handleSubmit = () => {
-    onSave(form);
-    onClose(); // close modal after save
+    const payload = {
+      ...form,
+      ingredients: form.ingredients.split('\n').map(i => i.trim()).filter(Boolean),
+    };
+    if (recipe?.id) {
+      payload.id = recipe.id;
+    }
+    onSave(payload);
+    onClose();
   };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h6">Edit Recipe</Typography>
+        <Typography variant="h6">{recipe ? 'Edit Recipe' : 'Add Recipe'}</Typography>
         <IconButton onClick={onClose}>
           <CloseIcon />
         </IconButton>
@@ -62,6 +81,15 @@ function EditRecipeModal({ open, onClose, onSave, recipe }) {
             fullWidth
           />
           <TextField
+            name="ingredients"
+            label="Ingredients (one per line)"
+            value={form.ingredients}
+            onChange={handleChange}
+            fullWidth
+            multiline
+            rows={4}
+          />
+          <TextField
             name="method"
             label="Method"
             value={form.method}
@@ -82,7 +110,9 @@ function EditRecipeModal({ open, onClose, onSave, recipe }) {
 
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" onClick={handleSubmit}>Save</Button>
+        <Button variant="contained" onClick={handleSubmit}>
+          Save
+        </Button>
       </DialogActions>
     </Dialog>
   );
