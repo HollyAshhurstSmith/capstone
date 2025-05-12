@@ -6,7 +6,7 @@ import { Link as RouterLink } from 'react-router-dom';
 
 function Navbar() {
   return (
-    <AppBar position="fixed" sx={{ backgroundColor: '#2E8B57', width: '100%' }}>
+    <AppBar position="fixed" sx={{ backgroundColor: '#2E8B57', width: '100%',}}>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
         {/* Left: Title + Icon */}
         <Box sx={{ display: 'flex', alignItems: 'center' }}>

@@ -3,8 +3,8 @@ import { TextField, Button, Box, Typography } from '@mui/material';
 
 function Login() {
   return (
-    <Box sx={{ maxWidth: 400, mx: 'auto', mt: 4 }}>
-      <Typography variant="h5" gutterBottom>LOGIN</Typography>
+    <Box sx={{ maxWidth: 400, mx: 'auto', mt: 4, paddingTop: '15%' }}>
+      <Typography variant="h4" fontWeight={'bold'} gutterBottom>LOGIN</Typography>
       <form>
         <TextField fullWidth label="Username" margin="normal" />
         <TextField fullWidth label="Password" type="password" margin="normal" />
@@ -21,7 +21,6 @@ function Login() {
       >
         Login
       </Button>
-
       </form>
     </Box>
   );

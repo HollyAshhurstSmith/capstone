@@ -1,42 +1,55 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+/* Make sure the content is pushed below the navbar */
+.App {
+  padding-top: 80px; /* Adjust based on navbar height */
+  padding-left: 16px;
+  padding-right: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Add some margin to the bottom of the navbar to avoid content overlap */
+nav {
+  position: fixed;
+  width: 100%;
+  z-index: 10;
+  background-color: #fff;
+}
+
+/* Centering title for h1, h2, etc. */
+h1, h2, h3, h4, h5, h6 {
+  text-align: center;
+  margin-bottom: 2rem; /* Space below titles */
+}
+
+/* Centering content inside cards */
+.recipe-card-container, .login-form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* Styling for the RecipeCard Grid */
+.MuiGrid-root {
+  display: flex;
+  justify-content: center;
+}
+
+/* Optional: Add some margin between the card grid */
+.MuiGrid-item {
+  margin-bottom: 2rem; /* Add some space between rows */
+}
+
+/* Optional: If needed for text inside cards */
+.recipe-card-title {
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+/* Centering the login form */
+.login-form-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

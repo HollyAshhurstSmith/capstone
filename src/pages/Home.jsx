@@ -1,173 +1,137 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
 import {
   Grid,
-  Snackbar,
-  Alert,
+  Box,
+  Button,
+  TextField,
   Dialog,
   DialogTitle,
   DialogActions,
-  Button,
-  TextField,
-  Box,
-  Stack
-} from '@mui/material';
-import RecipeCard from '../components/RecipeCard';
-import EditRecipeModal from '../components/EditRecipeModal';
+  Container,
+  Stack,
+} from "@mui/material";
+
+import RecipeCard from "../components/RecipeCard";
+import EditRecipeModal from "../components/EditRecipeModal";
+import { useRecipes } from "../contexts/RecipesContext";
+import { useModal } from "../contexts/ModalContext"; // Using unified modal context
 
 function Home() {
-  const [recipes, setRecipes] = useState([]);
-  const [selectedRecipe, setSelectedRecipe] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [snackOpen, setSnackOpen] = useState(false);
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [recipeToDelete, setRecipeToDelete] = useState(null);
-  const [snackMessage, setSnackMessage] = useState('');
-  const [snackSeverity, setSnackSeverity] = useState('success');
-  const [searchTerm, setSearchTerm] = useState('');
+  const { recipes, handleSave, handleDelete } = useRecipes();
 
-  useEffect(() => {
-    axios.get('http://localhost:3001/recipes')
-      .then(res => setRecipes(res.data))
-      .catch(err => console.error(err));
-  }, []);
+  const {
+    isModalOpen,
+    selectedRecipe,
+    openEditModal,
+    closeEditModal,
+    deleteConfirmOpen,
+    recipeToDelete,
+    openDeleteDialog,
+    closeDeleteDialog,
+  } = useModal();
 
-  const handleEditClick = (recipe) => {
-    setSelectedRecipe(recipe);
-    setModalOpen(true);
-  };
+  const [searchInput, setSearchInput] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const handleAddClick = () => {
-    setSelectedRecipe(null); // Clear form for new recipe
-    setModalOpen(true);
-  };
-
-  const handleDeleteClick = (recipe) => {
-    setRecipeToDelete(recipe);
-    setDeleteConfirmOpen(true);
-  };
-
-  const handleSave = (recipeData) => {
-    if (recipeData.id) {
-      // Existing recipe → PUT
-      axios.put(`http://localhost:3001/recipes/${recipeData.id}`, recipeData)
-        .then(() => {
-          setRecipes(prev => prev.map(r => r.id === recipeData.id ? recipeData : r));
-          setSnackMessage('Recipe updated successfully!');
-          setSnackSeverity('success');
-          setSnackOpen(true);
-          setModalOpen(false);
-        })
-        .catch(err => {
-          console.error(err);
-          setSnackMessage('Failed to update recipe.');
-          setSnackSeverity('error');
-          setSnackOpen(true);
-        });
-    } else {
-      // New recipe → POST
-      axios.post(`http://localhost:3001/recipes`, recipeData)
-        .then(res => {
-          setRecipes(prev => [...prev, res.data]);
-          setSnackMessage('Recipe added successfully!');
-          setSnackSeverity('success');
-          setSnackOpen(true);
-          setModalOpen(false);
-        })
-        .catch(err => {
-          console.error(err);
-          setSnackMessage('Failed to add recipe.');
-          setSnackSeverity('error');
-          setSnackOpen(true);
-        });
-    }
-  };
-
-  const confirmDelete = () => {
-    if (!recipeToDelete) return;
-    axios.delete(`http://localhost:3001/recipes/${recipeToDelete.id}`)
-      .then(() => {
-        setRecipes(prev => prev.filter(r => r.id !== recipeToDelete.id));
-        setSnackMessage('Recipe deleted successfully!');
-        setSnackSeverity('info');
-        setSnackOpen(true);
-        setRecipeToDelete(null);
-        setDeleteConfirmOpen(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setSnackMessage('Failed to delete recipe.');
-        setSnackSeverity('error');
-        setSnackOpen(true);
-      });
-  };
-
-  const filteredRecipes = recipes.filter(recipe =>
+  const filteredRecipes = recipes.filter((recipe) =>
     recipe.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const confirmDelete = () => {
+    if (!recipeToDelete) return;
+    handleDelete(recipeToDelete.id, () => {
+      closeDeleteDialog();
+    });
+  };
+
   return (
-    <>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+    <Box sx={{ p: 2 }}>
+      {/* Search, Filter & Add Recipe Controls */}
+      <Stack
+        direction="row"
+        spacing={2}
+        alignItems="center"
+        sx={{
+          mb: 3,
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+          paddingTop: "64px",
+        }}
+      >
         <TextField
-          label="Search Recipes"
+          label="Search by title"
           variant="outlined"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          fullWidth
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              setSearchTerm(searchInput);
+            }
+          }}
+          sx={{ flexGrow: 1, minWidth: "200px" }}
         />
-        <Button variant="contained" sx={{ ml: 2, whiteSpace: 'nowrap' }} onClick={handleAddClick}>
+
+        <Button variant="outlined" onClick={() => setSearchTerm(searchInput)}>
+          Search
+        </Button>
+
+        <Button
+          variant="outlined"
+          onClick={() => {
+            setSearchInput("");
+            setSearchTerm("");
+          }}
+        >
+          All Recipes
+        </Button>
+
+        <Button variant="contained" onClick={() => openEditModal(null)}>
           Add Recipe
         </Button>
       </Stack>
 
-      <Grid container spacing={3}>
-        {filteredRecipes.map(recipe => (
-          <Grid item xs={12} sm={6} md={4} key={recipe.id}>
-            <RecipeCard
-              recipe={recipe}
-              onEdit={() => handleEditClick(recipe)}
-              onDelete={() => handleDeleteClick(recipe)}
-            />
-          </Grid>
-        ))}
-      </Grid>
+      {/* Recipes Grid */}
+      <Container maxWidth="lg">
+        <Grid
+          container
+          spacing={3}
+          justifyContent="center"
+          alignItems="flex-start"
+          sx={{ width: "100%", maxWidth: 1200 }}
+        >
+          {filteredRecipes.map((recipe) => (
+            <Grid item xs={12} sm={6} md={4} key={recipe.id}>
+              <RecipeCard
+                recipe={recipe}
+                onEdit={() => openEditModal(recipe)}
+                onDelete={() => openDeleteDialog(recipe)}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
 
+      {/* Edit/Add Modal */}
       <EditRecipeModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSave={handleSave}
+        open={isModalOpen}
+        onClose={closeEditModal}
+        onSave={(data) => handleSave(data, closeEditModal)}
         recipe={selectedRecipe}
       />
 
-      <Dialog
-        open={deleteConfirmOpen}
-        onClose={() => setDeleteConfirmOpen(false)}
-      >
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteConfirmOpen} onClose={closeDeleteDialog}>
         <DialogTitle>
           Are you sure you want to delete "{recipeToDelete?.title}"?
         </DialogTitle>
         <DialogActions>
-          <Button onClick={() => setDeleteConfirmOpen(false)}>Cancel</Button>
-          <Button color="error" onClick={confirmDelete}>Delete</Button>
+          <Button onClick={closeDeleteDialog}>Cancel</Button>
+          <Button color="error" onClick={confirmDelete}>
+            Delete
+          </Button>
         </DialogActions>
       </Dialog>
-
-      <Snackbar
-        open={snackOpen}
-        autoHideDuration={3000}
-        onClose={() => setSnackOpen(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={() => setSnackOpen(false)}
-          severity={snackSeverity}
-          sx={{ width: '100%' }}
-        >
-          {snackMessage}
-        </Alert>
-      </Snackbar>
-    </>
+    </Box>
   );
 }
 
