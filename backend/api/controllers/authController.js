@@ -1,30 +1,25 @@
-// controllers/authController.js
-const jwt = require('jsonwebtoken');
+const authService = require('../services/authService');
 
-const users = [
-  { id: 1, username: 'admin', password: 'password' }
-];
-
-function login(req, res) {
+async function register(req, res) {
   const { username, password } = req.body;
-
-  const user = users.find(u => u.username === username && u.password === password);
-
-  if (!user) {
-    return res.status(401).json({ message: 'Invalid username or password' });
+  try {
+    await authService.registerUser(username, password);
+    res.status(201).json({ message: 'User registered successfully' });
+  } catch (err) {
+    const status = err.message === 'User already exists' ? 409 : 500;
+    res.status(status).json({ message: err.message });
   }
-
-  const token = jwt.sign(
-    { id: user.id, username: user.username },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '1h' }
-  );
-
-  res.json({
-    message: 'Login successful',
-    token,
-    user: { id: user.id, username: user.username }
-  });
 }
 
-module.exports = { login };
+async function login(req, res) {
+  const { username, password } = req.body;
+  try {
+    const { token, user } = await authService.loginUser(username, password);
+    res.json({ token, user, message: 'Login successful' });
+  } catch (err) {
+    const status = err.message === 'Invalid credentials' ? 401 : 500;
+    res.status(status).json({ message: err.message });
+  }
+}
+
+module.exports = { register, login };

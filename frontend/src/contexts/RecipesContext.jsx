@@ -6,6 +6,8 @@ export const RecipesContext = createContext();
 
 export const RecipesProvider = ({ children }) => {
   const [recipes, setRecipes] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(""); // ✅ NEW
+  const [filteredRecipes, setFilteredRecipes] = useState([]); // ✅ NEW
   const { toastrDispatch } = useContext(ToastrContext);
 
   const getAuthHeaders = () => {
@@ -17,10 +19,14 @@ export const RecipesProvider = ({ children }) => {
     };
   };
 
+  // ✅ Fetch recipes and initially set both full and filtered
   useEffect(() => {
     axios
       .get("http://localhost:3001/recipes", getAuthHeaders())
-      .then((res) => setRecipes(res.data))
+      .then((res) => {
+        setRecipes(res.data);
+        setFilteredRecipes(res.data); // initialize with full list
+      })
       .catch((err) => {
         console.error(err);
         toastrDispatch({
@@ -33,6 +39,14 @@ export const RecipesProvider = ({ children }) => {
         });
       });
   }, []);
+
+  // ✅ Filter logic: run anytime searchTerm or recipes change
+  useEffect(() => {
+    const filtered = recipes.filter((recipe) =>
+      recipe.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredRecipes(filtered);
+  }, [recipes, searchTerm]);
 
   const handleSave = (recipeData, onSuccess) => {
     const request = recipeData.id
@@ -96,7 +110,16 @@ export const RecipesProvider = ({ children }) => {
   };
 
   return (
-    <RecipesContext.Provider value={{ recipes, handleSave, handleDelete }}>
+    <RecipesContext.Provider
+      value={{
+        recipes,
+        filteredRecipes,
+        searchTerm,
+        setSearchTerm,       
+        handleSave,
+        handleDelete,
+      }}
+    >
       {children}
     </RecipesContext.Provider>
   );

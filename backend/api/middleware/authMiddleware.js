@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
-  const token = authHeader?.split(' ')[1]; // Expecting: "Bearer <token>"
+  const token = authHeader?.split(' ')[1];
 
   if (!token) {
     return res.status(401).json({ message: 'Missing or invalid token' });
@@ -13,7 +13,7 @@ function authenticateToken(req, res, next) {
     req.user = decoded;
     next();
   } catch (err) {
-    res.status(403).json({ message: 'Invalid or expired token' });
+    return res.status(401).json({ message: 'Invalid or expired token' });
   }
 }
 

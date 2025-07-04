@@ -1,72 +1,56 @@
-const Recipe = require('../models/recipe');
+const recipeService = require('../services/recipeService');
 
-// Get all recipes
 async function getAllRecipes(req, res) {
   try {
-    const recipes = await Recipe.findAll();
+    const recipes = await recipeService.getAllRecipes();
     res.status(200).json(recipes);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Failed to fetch recipes' });
   }
 }
 
-// Get recipe by ID
 async function getRecipeById(req, res) {
   try {
     const id = parseInt(req.params.id);
-    const recipe = await Recipe.findByPk(id);
-    if (recipe) {
-      res.status(200).json(recipe);
-    } else {
-      res.status(404).json({ message: "Recipe not found" });
+    const recipe = await recipeService.getRecipeById(id);
+    if (!recipe) {
+      return res.status(404).json({ message: 'Recipe not found' });
     }
+    res.status(200).json(recipe);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Error retrieving recipe' });
   }
 }
 
-// Create a new recipe
 async function createRecipe(req, res) {
   try {
-    const newRecipe = await Recipe.create(req.body);
+    const newRecipe = await recipeService.createRecipe(req.body);
     res.status(201).json(newRecipe);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Error creating recipe' });
   }
 }
 
-// Update an existing recipe or create if it doesn't exist
 async function updateRecipe(req, res) {
   try {
     const id = parseInt(req.params.id);
-    const [updated] = await Recipe.update(req.body, {
-      where: { id }
-    });
-
-    if (updated) {
-      const updatedRecipe = await Recipe.findByPk(id);
-      return res.status(200).json(updatedRecipe);
-    } else {
-      const newRecipe = await Recipe.create({ id, ...req.body });
-      return res.status(201).json(newRecipe);
-    }
+    const result = await recipeService.updateOrCreateRecipe(id, req.body);
+    res.status(result.created ? 201 : 200).json(result);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Error updating recipe' });
   }
 }
 
-// Delete a recipe
 async function deleteRecipe(req, res) {
   try {
     const id = parseInt(req.params.id);
-    const recipe = await Recipe.findByPk(id);
-    if (!recipe) {
-      return res.status(404).json({ message: "Recipe not found" });
+    const deleted = await recipeService.deleteRecipe(id);
+    if (!deleted) {
+      return res.status(404).json({ message: 'Recipe not found' });
     }
-    await recipe.destroy();
-    res.status(200).json(recipe);
+    res.status(200).json(deleted);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Error deleting recipe' });
   }
 }
 
@@ -75,5 +59,5 @@ module.exports = {
   getRecipeById,
   createRecipe,
   updateRecipe,
-  deleteRecipe
+  deleteRecipe,
 };
