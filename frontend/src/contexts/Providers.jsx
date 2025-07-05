@@ -1,4 +1,3 @@
-// src/contexts/Providers.jsx
 import { ToastrProvider } from "./ToastrContext";
 import { RecipesProvider } from "./RecipesContext";
 import { ModalProvider } from "./ModalContext";

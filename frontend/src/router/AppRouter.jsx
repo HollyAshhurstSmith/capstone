@@ -6,11 +6,13 @@ import theme from "../theme";
 import Providers from "../contexts/Providers";
 import Navbar from "../components/Navbar";
 import ProtectedRoute from "../components/ProtectedRoute";
+
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import RecipeBook from "../pages/RecipeBook";
-import ShoppingList from "../pages/ShoppingList"; 
-import "../App.css"; 
+import ShoppingList from "../pages/ShoppingList";
+
+import "../App.css";
 
 function AppRouter() {
   return (
@@ -21,25 +23,16 @@ function AppRouter() {
           <Navbar />
           <div className="App" style={{ paddingTop: "64px" }}>
             <Routes>
+              {/* Public routes */}
               <Route path="/" element={<Navigate to="/login" />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route
-                path="/recipe-book"
-                element={
-                  <ProtectedRoute>
-                    <RecipeBook />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/shopping-list"
-                element={
-                  <ProtectedRoute>
-                    <ShoppingList />
-                  </ProtectedRoute>
-                }
-              />
+
+              {/* Protected routes */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/recipe-book" element={<RecipeBook />} />
+                <Route path="/shopping-list" element={<ShoppingList />} />
+              </Route>
             </Routes>
           </div>
         </Router>
