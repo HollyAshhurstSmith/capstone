@@ -13,8 +13,11 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/recipes', recipeRouter);
-app.use('/auth', authRouter);
+//app.use('/recipes', recipeRouter);
+//app.use('/auth', authRouter);
+app.use('/api/recipes', recipeRouter);
+app.use('/api/auth', authRouter);
+
 
 // Sync DB and start server
 sequelize.sync({ alter: true })

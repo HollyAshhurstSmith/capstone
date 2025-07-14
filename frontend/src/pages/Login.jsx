@@ -22,7 +22,8 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:3001/auth/login', {
+      //const response = await axios.post('http://localhost:3001/auth/login', {
+        const response = await axios.post('http://localhost:3001/api/auth/login', {
         username,
         password,
       });
