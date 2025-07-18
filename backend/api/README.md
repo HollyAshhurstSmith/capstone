@@ -5,7 +5,7 @@ This is the **backend API** for the Recipe App project, built with **Node.js**, 
 
 ---
 
-# Tech Stack
+## Tech Stack
 
 - **Node.js**
 - **Express.js**
@@ -15,7 +15,7 @@ This is the **backend API** for the Recipe App project, built with **Node.js**, 
 
 ---
 
-# Clone the repository
+## Clone the repository
 
 ```
 git clone (link)
@@ -24,7 +24,7 @@ cd recipe-app/backend/api
 
 ---
 
-# Install node_modules:
+## Install node_modules:
 
 ```
 npm install
@@ -33,7 +33,7 @@ npm ci
 
 ---
 
-# .env should contain:
+## .env should contain:
 
 ```
 DB_NAME=recipes
@@ -43,7 +43,7 @@ JWT_SECRET=supersecretkey # would replace with something stronger
 JWT_EXPIRES_IN=1h    # token valid for 1 hour
 ```
 
-# Need to create single user in the users table before the recipes endpoint can function, for example:
+## Need to create single user in the users table before the recipes endpoint can function, for example:
 
 ```
 INSERT INTO users (username, password_hash, created_at)
