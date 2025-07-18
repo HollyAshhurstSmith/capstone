@@ -4,50 +4,47 @@ This is the **backend API** for the Recipe App project, built with **Node.js**, 
 
 ---
 
-## Tech Stack
+# Tech Stack
 
 - **Node.js**
 - **Express.js**
 - **Sequelize ORM**
-- **PostgreSQL / SQLite** (configurable)
 - **JWT Authentication**
 - **Dotenv for environment variables**
 
 ---
 
-## Folder Structure
+# Clone the repository
 
-backend/
-├── api/
-│ ├── controllers/ # Handles incoming requests and responses
-│ ├── middleware/ # Middleware for auth, error handling
-│ ├── models/ # Sequelize models (User, Recipe)
-│ ├── routes/ # Express route definitions
-│ ├── services/ # Business logic
-├── .env # Environment variables
-├── db.js # Database config and connection
-├── server.js # Entry point for the Express app
+```
+git clone (link)
+cd recipe-app/backend/api
 
 
----
+Install node_modules:
 
-## Getting Started
+```
+npm install
+npm ci
+```
 
-### 1. Clone the repository
+.env should contain:
 
-```bash
-git clone https://github.com/your-username/recipe-app.git
-cd recipe-app/backend
+``` 
+DB_NAME=recipes
+DB_USER=root
+DB_HOST="127.0.0.1"
+JWT_SECRET=supersecretkey # would replace with something stronger
+JWT_EXPIRES_IN=1h    # token valid for 1 hour
+```
 
-Install dependencies
-PORT=5000
-DB_URL=your_database_url
-JWT_SECRET=your_jwt_secret
+Need to create single user in the users table before the recipes endpoint can function, for example:
 
+```
+INSERT INTO users (username, password_hash, created_at)
+VALUES ('Test User', 'dummyhashedpassword123', NOW());
+```
 
-Run the Backend
-npm run dev
+## Starting API
 
-
-
-
+Run `npm start`
