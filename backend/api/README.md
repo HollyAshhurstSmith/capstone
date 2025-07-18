@@ -1,5 +1,6 @@
 # Recipe App – Backend
 
+
 This is the **backend API** for the Recipe App project, built with **Node.js**, **Express**, and **Sequelize**. It provides a RESTful API for managing user accounts and recipes, including authentication and CRUD functionality.
 
 ---
@@ -19,18 +20,22 @@ This is the **backend API** for the Recipe App project, built with **Node.js**, 
 ```
 git clone (link)
 cd recipe-app/backend/api
+```
 
+---
 
-Install node_modules:
+# Install node_modules:
 
 ```
 npm install
 npm ci
 ```
 
-.env should contain:
+---
 
-``` 
+# .env should contain:
+
+```
 DB_NAME=recipes
 DB_USER=root
 DB_HOST="127.0.0.1"
@@ -38,7 +43,7 @@ JWT_SECRET=supersecretkey # would replace with something stronger
 JWT_EXPIRES_IN=1h    # token valid for 1 hour
 ```
 
-Need to create single user in the users table before the recipes endpoint can function, for example:
+# Need to create single user in the users table before the recipes endpoint can function, for example:
 
 ```
 INSERT INTO users (username, password_hash, created_at)
