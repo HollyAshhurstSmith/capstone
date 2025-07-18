@@ -3,8 +3,10 @@ const router = express.Router();
 const recipeController = require("../controllers/recipeController");
 const authenticateToken = require('../middleware/authMiddleware');
 
-// router.get("/", recipeController.getAllRecipes);
-router.get("/", authenticateToken, recipeController.getAllRecipes);
+// Apply to all routes in this router
+router.use(authenticateToken);
+
+router.get("/", recipeController.getAllRecipes);
 router.get("/:id", recipeController.getRecipeById);
 router.post("/", recipeController.createRecipe);
 router.put("/:id", recipeController.updateRecipe);

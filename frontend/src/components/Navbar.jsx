@@ -19,7 +19,7 @@ function Navbar() {
         {/* Left: App Title and Icon */}
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Typography variant="h6" sx={{ fontWeight: 800, letterSpacing: 1 }}>
-            RECIPE BOOK APP
+            KITCHEN BYTES
           </Typography>
           <EmojiFoodBeverageIcon sx={{ ml: 1 }} />
         </Box>

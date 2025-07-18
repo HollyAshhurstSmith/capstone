@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:3001/api/auth"; // adjust if your route is different
+const API_BASE = "http://localhost:3001/api/auth";
 
 export const login = async (username, password) => {
   const res = await fetch(`${API_BASE}/login`, {
