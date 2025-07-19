@@ -9,7 +9,6 @@ async function getRecipeById(id) {
 }
 
 async function createRecipe(data) {
-  //could validate required fields here (e.g., title, ingredients)
   return await Recipe.create(data);
 }
 

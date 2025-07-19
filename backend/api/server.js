@@ -13,8 +13,6 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-//app.use('/recipes', recipeRouter);
-//app.use('/auth', authRouter);
 app.use('/api/recipes', recipeRouter);
 app.use('/api/auth', authRouter);
 
